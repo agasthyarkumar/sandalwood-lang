@@ -4,13 +4,15 @@ import argparse
 from pathlib import Path
 
 from sandalwood.errors.handler import format_error
-from sandalwood.errors.exceptions import SandalwoodError
+from sandalwood.errors.exceptions import RuntimeSandalwoodError, SandalwoodError
 from sandalwood.interpreter.interpreter import Interpreter
 from sandalwood.lexer.lexer import Lexer
 from sandalwood.parser.parser import Parser
 
 
 def run_file(path: Path, print_tokens: bool = False) -> int:
+    if path.suffix != ".sw":
+        raise RuntimeSandalwoodError("Only .sw source files are supported")
     source = path.read_text(encoding="utf-8")
     lexer = Lexer(source)
     tokens = lexer.tokenize()

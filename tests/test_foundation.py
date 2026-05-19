@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
+import tomllib
 import unittest
 
 from sandalwood.lexer.lexer import Lexer
@@ -22,6 +23,11 @@ class LexerFoundationTests(unittest.TestCase):
 
 
 class CliFoundationTests(unittest.TestCase):
+    def test_project_exposes_sandal_console_script(self) -> None:
+        repo_root = Path(__file__).resolve().parents[1]
+        pyproject = tomllib.loads((repo_root / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(pyproject["project"]["scripts"]["sandal"], "sandalwood.cli.main:main")
+
     def test_cli_runs_hello_program(self) -> None:
         repo_root = Path(__file__).resolve().parents[1]
         result = subprocess.run(
@@ -37,6 +43,7 @@ class CliFoundationTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("Namaskara Sandalwood!", result.stdout)
         self.assertIn("Parsed hello.sw", result.stdout)
 
 

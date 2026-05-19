@@ -24,8 +24,21 @@ class Program(ASTNode):
 
 
 @dataclass(slots=True)
-class PlaceholderStatement(Statement):
-    tokens: list[str]
+class FunctionDefinition(Statement):
+    name: str
+    parameters: list[str]
+    body: list[Statement]
+
+
+@dataclass(slots=True)
+class VariableDeclaration(Statement):
+    name: str
+    value: "Expression"
+
+
+@dataclass(slots=True)
+class PrintStatement(Statement):
+    value: "Expression"
 
 
 @dataclass(slots=True)
@@ -35,4 +48,4 @@ class Identifier(Expression):
 
 @dataclass(slots=True)
 class Literal(Expression):
-    value: str
+    value: object
