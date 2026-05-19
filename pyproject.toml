@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sandalwood-lang"
+version = "0.1.0"
+description = "Sandalwood interpreted programming language foundations"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "agasthyarkumar" }]
+dependencies = []
+
+[tool.setuptools]
+include-package-data = true
