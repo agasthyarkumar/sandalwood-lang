@@ -1,0 +1,5 @@
+{
+  "version": "0.1",
+  "entrypoint": "program",
+  "notes": "Initial grammar skeleton. Parsing rules will be expanded incrementally."
+}
