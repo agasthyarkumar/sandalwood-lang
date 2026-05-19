@@ -145,6 +145,53 @@ scene main() {
             Interpreter().interpret(_parse_program(source))
         self.assertEqual(output.getvalue().strip(), "4")
 
+    def test_concatenates_strings_and_numbers_in_dialogue(self) -> None:
+        source = """
+scene main() {
+  idhu n = 3
+  dialogue("Move disk " + n + " from A to B")
+}
+"""
+        output = io.StringIO()
+        with redirect_stdout(output):
+            Interpreter().interpret(_parse_program(source))
+        self.assertEqual(output.getvalue().strip(), "Move disk 3 from A to B")
+
+    def test_ignores_line_comments_and_keeps_floor_division(self) -> None:
+        source = """
+scene main() {
+  // ignore this line
+  dialogue(8 // 3)
+}
+"""
+        output = io.StringIO()
+        with redirect_stdout(output):
+            Interpreter().interpret(_parse_program(source))
+        self.assertEqual(output.getvalue().strip(), "2")
+
+    def test_ignores_trailing_comment_after_statement(self) -> None:
+        source = """
+scene main() {
+  dialogue("ok") // trailing comment
+}
+"""
+        output = io.StringIO()
+        with redirect_stdout(output):
+            Interpreter().interpret(_parse_program(source))
+        self.assertEqual(output.getvalue().strip(), "ok")
+
+    def test_supports_array_literals_and_indexing(self) -> None:
+        source = """
+scene main() {
+  idhu values = [1, 3, 5, 7, 9, 11]
+  dialogue(values[3])
+}
+"""
+        output = io.StringIO()
+        with redirect_stdout(output):
+            Interpreter().interpret(_parse_program(source))
+        self.assertEqual(output.getvalue().strip(), "7")
+
     def test_short_circuit_or_does_not_evaluate_rhs(self) -> None:
         source = """
 scene main() {

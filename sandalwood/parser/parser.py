@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from sandalwood.ast.nodes import (
+    ArrayLiteral,
     BinaryExpression,
     CallExpression,
     ExpressionStatement,
@@ -8,6 +9,7 @@ from sandalwood.ast.nodes import (
     IfStatement,
     Identifier,
     Literal,
+    IndexExpression,
     PrintStatement,
     Program,
     ReturnStatement,
@@ -29,6 +31,7 @@ class Parser:
         program = Program()
         while not self._is_at_end():
             self._consume_newlines()
+            self._consume_trailing_comment()
             if self._is_at_end():
                 break
             program.statements.append(self._parse_top_level_statement())
@@ -54,6 +57,7 @@ class Parser:
                 raise ParserError("Unterminated function body", scene_token.line, scene_token.column)
             body.append(self._parse_function_statement())
             self._consume_newlines()
+            self._consume_trailing_comment()
 
         self._consume_delimiter("}", "Expected '}' after function body")
         self._consume_newlines()
@@ -134,26 +138,27 @@ class Parser:
                 raise ParserError("Unterminated block", token.line, token.column)
             body.append(self._parse_function_statement())
             self._consume_newlines()
+            self._consume_trailing_comment()
         self._consume_delimiter("}", "Expected '}' after block")
         self._consume_newlines()
         return body
 
-    def _parse_expression(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_expression(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         return self._parse_logical_or()
 
-    def _parse_logical_or(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_logical_or(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_logical_and()
         while self._match_operator("||"):
             expression = BinaryExpression(left=expression, operator="||", right=self._parse_logical_and())
         return expression
 
-    def _parse_logical_and(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_logical_and(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_equality()
         while self._match_operator("&&"):
             expression = BinaryExpression(left=expression, operator="&&", right=self._parse_equality())
         return expression
 
-    def _parse_equality(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_equality(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_comparison()
         while True:
             if self._match_operator("=="):
@@ -165,7 +170,7 @@ class Parser:
             break
         return expression
 
-    def _parse_comparison(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_comparison(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_term()
         while True:
             if self._match_operator(">="):
@@ -183,7 +188,7 @@ class Parser:
             break
         return expression
 
-    def _parse_term(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_term(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_factor()
         while True:
             if self._match_operator("+"):
@@ -195,7 +200,7 @@ class Parser:
             break
         return expression
 
-    def _parse_factor(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_factor(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_unary()
         while True:
             if self._match_operator("*"):
@@ -213,27 +218,35 @@ class Parser:
             break
         return expression
 
-    def _parse_unary(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_unary(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         if self._match_operator("!"):
             return UnaryExpression(operator="!", operand=self._parse_unary())
         if self._match_operator("-"):
             return UnaryExpression(operator="-", operand=self._parse_unary())
-        return self._parse_call()
+        return self._parse_postfix()
 
-    def _parse_call(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression:
+    def _parse_postfix(self) -> Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression:
         expression = self._parse_primary()
-        while self._match_delimiter("("):
-            arguments: list[Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression] = []
-            if not self._check_delimiter(")"):
-                while True:
-                    arguments.append(self._parse_expression())
-                    if not self._match_delimiter(","):
-                        break
-            self._consume_delimiter(")", "Expected ')' after arguments")
-            expression = CallExpression(callee=expression, arguments=arguments)
+        while True:
+            if self._match_delimiter("("):
+                arguments: list[Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression] = []
+                if not self._check_delimiter(")"):
+                    while True:
+                        arguments.append(self._parse_expression())
+                        if not self._match_delimiter(","):
+                            break
+                self._consume_delimiter(")", "Expected ')' after arguments")
+                expression = CallExpression(callee=expression, arguments=arguments)
+                continue
+            if self._match_delimiter("["):
+                index = self._parse_expression()
+                self._consume_delimiter("]", "Expected ']' after index expression")
+                expression = IndexExpression(sequence=expression, index=index)
+                continue
+            break
         return expression
 
-    def _parse_primary(self) -> Identifier | Literal:
+    def _parse_primary(self) -> Identifier | Literal | ArrayLiteral:
         token = self._peek()
         if token.token_type == TokenType.STRING:
             return Literal(value=self._advance().value)
@@ -251,6 +264,16 @@ class Parser:
             expression = self._parse_expression()
             self._consume_delimiter(")", "Expected ')' after expression")
             return expression
+        if token.token_type == TokenType.DELIMITER and token.value == "[":
+            self._advance()
+            elements: list[Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression] = []
+            if not self._check_delimiter("]"):
+                while True:
+                    elements.append(self._parse_expression())
+                    if not self._match_delimiter(","):
+                        break
+            self._consume_delimiter("]", "Expected ']' after array literal")
+            return ArrayLiteral(elements=elements)
         raise ParserError(f"Unsupported expression: {token.value}", token.line, token.column)
 
     def _match(self, token_type: TokenType) -> bool:
@@ -328,6 +351,18 @@ class Parser:
     def _consume_newlines(self) -> None:
         while self._match(TokenType.NEWLINE):
             continue
+
+    def _consume_trailing_comment(self) -> None:
+        if not self._is_comment_start():
+            return
+        while not self._is_at_end() and not self._check(TokenType.NEWLINE):
+            self._advance()
+
+    def _is_comment_start(self) -> bool:
+        if self._is_at_end():
+            return False
+        token = self._peek()
+        return token.token_type == TokenType.OPERATOR and token.value == "//"
 
     def _is_keyword(self, keyword: str) -> bool:
         if self._is_at_end():

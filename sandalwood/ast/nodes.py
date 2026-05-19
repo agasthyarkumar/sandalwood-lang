@@ -86,3 +86,14 @@ class BinaryExpression(Expression):
 class CallExpression(Expression):
     callee: "Expression"
     arguments: list["Expression"]
+
+
+@dataclass(slots=True)
+class ArrayLiteral(Expression):
+    elements: list["Expression"]
+
+
+@dataclass(slots=True)
+class IndexExpression(Expression):
+    sequence: "Expression"
+    index: "Expression"

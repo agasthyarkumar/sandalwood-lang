@@ -45,6 +45,10 @@ class Lexer:
                 tokens.append(Token(TokenType.NEWLINE, "\\n", self.line, self.column))
                 self._advance_line()
                 continue
+            if current == "/" and self.source.startswith("//", self.position) and self._is_line_comment():
+                while not self._is_at_end() and self._peek() != "\n":
+                    self._advance()
+                continue
             if current.isalpha() or current == "_":
                 tokens.append(self._identifier_or_keyword())
                 continue
@@ -113,6 +117,17 @@ class Lexer:
                     self._advance()
                 return token
         return None
+
+    def _is_line_comment(self) -> bool:
+        index = self.position - 1
+        while index >= 0:
+            char = self.source[index]
+            if char == "\n":
+                return True
+            if char not in {" ", "\t", "\r"}:
+                return False
+            index -= 1
+        return True
 
     def _peek(self) -> str:
         return self.source[self.position]

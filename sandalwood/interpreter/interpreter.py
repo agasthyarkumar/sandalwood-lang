@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from sandalwood.ast.nodes import (
+    ArrayLiteral,
     BinaryExpression,
     CallExpression,
     ExpressionStatement,
     FunctionDefinition,
     IfStatement,
     Identifier,
+    IndexExpression,
     Literal,
     PrintStatement,
     Program,
@@ -94,9 +96,11 @@ class Interpreter:
         finally:
             self.environment.pop_scope()
 
-    def _evaluate_expression(self, expression: Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression) -> object:
+    def _evaluate_expression(self, expression: Identifier | Literal | UnaryExpression | BinaryExpression | CallExpression | ArrayLiteral | IndexExpression) -> object:
         if isinstance(expression, Literal):
             return expression.value
+        if isinstance(expression, ArrayLiteral):
+            return [self._evaluate_expression(element) for element in expression.elements]
         if isinstance(expression, Identifier):
             try:
                 return self.environment.resolve(expression.name)
@@ -124,6 +128,8 @@ class Interpreter:
             left = self._evaluate_expression(expression.left)
             right = self._evaluate_expression(expression.right)
             if expression.operator == "+":
+                if isinstance(left, str) or isinstance(right, str):
+                    return f"{left}{right}"
                 return left + right
             if expression.operator == "-":
                 return left - right
@@ -161,6 +167,13 @@ class Interpreter:
                     raise RuntimeSandalwoodError("size() expects 1 argument")
                 return len(arguments[0])
             raise RuntimeSandalwoodError(f"Undefined function: {callee_name}")
+        if isinstance(expression, IndexExpression):
+            sequence = self._evaluate_expression(expression.sequence)
+            index = self._evaluate_expression(expression.index)
+            try:
+                return sequence[index]
+            except (TypeError, IndexError, KeyError) as exc:
+                raise RuntimeSandalwoodError(f"Invalid index access: {exc}") from exc
         raise RuntimeSandalwoodError(f"Unsupported expression type: {type(expression).__name__}")
 
     @staticmethod
