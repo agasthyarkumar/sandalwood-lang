@@ -11,7 +11,7 @@ from sandalwood.lexer.token import TokenType
 
 class LexerFoundationTests(unittest.TestCase):
     def test_tokenizes_keyword_identifier_literal_operator_delimiter(self) -> None:
-        source = 'let number = 42\nprint(number)\n'
+        source = 'idhu number = 42\ndialogue(number)\n'
         tokens = Lexer(source).tokenize()
         token_types = [token.token_type for token in tokens]
         self.assertIn(TokenType.KEYWORD, token_types)

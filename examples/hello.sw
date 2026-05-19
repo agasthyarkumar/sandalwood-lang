@@ -1,3 +1,3 @@
-function main() {
-  print("Namaskara Sandalwood!")
+scene main() {
+  dialogue("Namaskara Sandalwood!")
 }

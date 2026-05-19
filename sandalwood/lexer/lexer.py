@@ -15,13 +15,12 @@ class LexerConfig:
 
     @classmethod
     def from_files(cls) -> "LexerConfig":
-        keyword_data = load_config("keywords.json")
-        operator_data = load_config("operators.json")
-        operators = sorted(operator_data["operators"], key=len, reverse=True)
+        syntax_data = load_config("syntax.json")
+        operators = sorted(syntax_data["operators"].keys(), key=len, reverse=True)
         return cls(
-            keywords=set(keyword_data["keywords"]),
+            keywords=set(syntax_data["keywords"].keys()),
             operators=operators,
-            delimiters=set(operator_data["delimiters"]),
+            delimiters=set(syntax_data["delimiters"].keys()),
         )
 
 

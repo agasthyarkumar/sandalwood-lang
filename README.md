@@ -12,6 +12,7 @@ Project goals:
 - Beginner-friendly implementation
 - Extensible parser and runtime
 - Config-driven lexer keywords/operators
+- Single-source syntax spec in `config/syntax.json`
 
 ## Project Structure
 
@@ -36,3 +37,11 @@ sandalwood-lang/
 ```bash
 python -m sandalwood.cli.main examples/hello.sw
 ```
+
+## Syntax Configuration
+
+All language syntax is defined in:
+
+`config/syntax.json`
+
+This file contains Sandalwood language metadata, keywords, operators, delimiters, builtins, collection method names, and runtime mappings.
