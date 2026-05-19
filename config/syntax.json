@@ -1,0 +1,101 @@
+{
+  "language": {
+    "name": "Sandalwood",
+    "extension": ".sw",
+    "version": "0.1"
+  },
+  "keywords": {
+    "idhu": "VARIABLE_MUTABLE",
+    "pakka": "VARIABLE_CONSTANT",
+    "scene": "FUNCTION_DEFINE",
+    "packup": "RETURN",
+    "nodona": "IF",
+    "illandre": "ELSE_IF",
+    "climax": "ELSE",
+    "retake": "WHILE",
+    "cut": "BREAK",
+    "mundhe": "CONTINUE",
+    "blockbuster": "TRUE",
+    "flop": "FALSE",
+    "dialogue": "PRINT",
+    "kelu": "INPUT",
+    "banner": "CLASS",
+    "hosa": "NEW",
+    "nanu": "SELF",
+    "tharale": "IMPORT",
+    "prayatna": "TRY",
+    "thappu": "CATCH",
+    "kone": "FINALLY"
+  },
+  "operators": {
+    "+": "PLUS",
+    "-": "MINUS",
+    "*": "MULTIPLY",
+    "/": "DIVIDE",
+    "%": "MODULUS",
+    "//": "FLOOR_DIVIDE",
+    "==": "EQUAL",
+    "!=": "NOT_EQUAL",
+    ">": "GREATER",
+    "<": "LESS",
+    ">=": "GREATER_EQUAL",
+    "<=": "LESS_EQUAL",
+    "&&": "AND",
+    "||": "OR",
+    "!": "NOT",
+    "=": "ASSIGN"
+  },
+  "delimiters": {
+    "(": "LPAREN",
+    ")": "RPAREN",
+    "{": "LBRACE",
+    "}": "RBRACE",
+    "[": "LBRACKET",
+    "]": "RBRACKET",
+    ";": "SEMICOLON",
+    ",": "COMMA",
+    ":": "COLON"
+  },
+  "collections": {
+    "array_methods": {
+      "tallu": "append",
+      "tegeyu": "pop",
+      "ulta": "reverse",
+      "jodisu": "sort",
+      "size": "len"
+    },
+    "map_methods": {
+      "haku": "insert",
+      "siktha": "contains",
+      "chavi": "keys",
+      "bele": "values"
+    }
+  },
+  "builtins": {
+    "print": "dialogue",
+    "input": "kelu",
+    "len": "size",
+    "min": "min",
+    "max": "max",
+    "abs": "abs",
+    "pow": "pow",
+    "sqrt": "sqrt",
+    "split": "split",
+    "join": "join",
+    "replace": "replace",
+    "upper": "upper",
+    "lower": "lower"
+  },
+  "runtime_mappings": {
+    "dialogue": "print",
+    "kelu": "input",
+    "blockbuster": "True",
+    "flop": "False",
+    "retake": "while",
+    "scene": "def",
+    "packup": "return",
+    "nodona": "if",
+    "illandre": "elif",
+    "climax": "else"
+  }
+}

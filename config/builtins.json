@@ -1,7 +1,0 @@
-{
-  "builtins": [
-    "print",
-    "len",
-    "range"
-  ]
-}

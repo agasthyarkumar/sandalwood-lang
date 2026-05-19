@@ -1,4 +1,4 @@
-function binary_search(arr, target) {
-  let left = 0
-  let right = len(arr) - 1
+scene binary_search(arr, target) {
+  idhu left = 0
+  idhu right = size(arr) - 1
 }

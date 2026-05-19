@@ -1,6 +1,6 @@
-function fibonacci(n) {
-  if (n <= 1) {
-    return n
+scene fibonacci(n) {
+  nodona (n <= 1) {
+    packup n
   }
-  return fibonacci(n - 1) + fibonacci(n - 2)
+  packup fibonacci(n - 1) + fibonacci(n - 2)
 }
