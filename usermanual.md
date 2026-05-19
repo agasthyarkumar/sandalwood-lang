@@ -1,5 +1,55 @@
 # Sandalwood User Manual
 
+## Setup & Installation
+
+### Prerequisites
+
+- Python 3.10 or higher
+- pip (Python package manager)
+
+### Quick Setup
+
+**Option 1: Automated Setup (Recommended)**
+
+Run the automated setup script:
+
+```bash
+bash init.sh
+```
+
+This will:
+- Verify Python version
+- Install the Sandalwood package in development mode
+- Verify the `sandal` command is available
+
+**Option 2: Manual Setup**
+
+```bash
+# Navigate to project directory
+cd /path/to/sandalwood-lang
+
+# Install in development mode
+pip install -e .
+
+# Verify installation
+sandal --help
+```
+
+### Running Sandalwood Programs
+
+After setup, run any `.sw` file with:
+
+```bash
+sandal examples/hello.sw
+```
+
+### Example Programs
+
+Try these included examples:
+- `examples/hello.sw` - Hello world
+- `examples/fibonacci.sw` - Fibonacci sequence
+- `examples/binary_search.sw` - Binary search algorithm
+
 ## Language
 
 - Name: Sandalwood
