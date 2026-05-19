@@ -12,5 +12,8 @@ license = { text = "MIT" }
 authors = [{ name = "agasthyarkumar" }]
 dependencies = []
 
+[project.scripts]
+sandal = "sandalwood.cli.main:main"
+
 [tool.setuptools]
 include-package-data = true

@@ -35,7 +35,7 @@ sandalwood-lang/
 ## Quick Start
 
 ```bash
-python -m sandalwood.cli.main examples/hello.sw
+sandal examples/hello.sw
 ```
 
 ## Syntax Configuration
